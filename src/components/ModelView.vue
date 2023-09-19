@@ -53,8 +53,34 @@ export default defineComponent({
 
                 scene.add(model);
                 render();
-                animateModel();
             });
+
+            let totalRotation = 0;
+            let rotationSpeed = 0.5; // Starting rotation speed (fast)
+            const targetRotationSpeed = 0.01; // Target rotation speed for easing
+
+            const animateModel = () => {
+                requestAnimationFrame(animateModel);
+
+                if (model) {
+                    rotationSpeed = lerp(rotationSpeed, targetRotationSpeed, 0.04); // Adjust the lerp factor
+
+                    model.rotation.y += rotationSpeed;
+                    totalRotation += rotationSpeed;
+
+                    if (totalRotation >= Math.PI * 2 * 2) {
+                        return;
+                    }
+                }
+
+                renderer.render(scene, camera);
+            };
+
+            function lerp(a: any, b: any, t: any) {
+                return a + (b - a) * t;
+            }
+
+            animateModel();
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.addEventListener('change', render);
@@ -63,26 +89,6 @@ export default defineComponent({
             controls.enableDamping = true;
             controls.enableZoom = false;
             controls.update();
-
-            let totalRotation = 0;
-
-            function easeOutQuad(t) {
-                return 1 - (1 - t) * (1 - t);
-            }
-            
-            function animateModel () {
-                requestAnimationFrame(animateModel);
-                if (model) {
-                    model.rotation.y += 0.2;
-                    totalRotation += 0.2;
-
-                    if (totalRotation >= Math.PI * 2 * 3) {
-                        return;
-                    }
-                }
-
-                renderer.render(scene, camera);
-            };
 
             function render() {
                 renderer.render( scene, camera );
