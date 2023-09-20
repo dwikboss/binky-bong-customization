@@ -50,18 +50,18 @@ export default defineComponent({
 
             loader.load('./src/assets/models/tokki_old.glb', (gltf) => {
                 model = gltf.scene;
-                model.position.set(0, -1, 0)
+                model.position.set(0, -0.45, 0)
                 model.scale.set(3.1, 3.1, 3.1);
 
                 scene.add(model);
             });
 
             let totalRotation = 0;
-            let rotationSpeed = 0.2;
+            let rotationSpeed = 0.22;
             const targetRotationSpeed = 0.00;
 
             let modelYPosition = -1;
-            const targetPosition = -0.45;
+            const targetPosition = -0.4;
 
             const animateModel = () => {
                 requestAnimationFrame(animateModel);
@@ -73,14 +73,13 @@ export default defineComponent({
                     model.rotation.y += rotationSpeed;
                     totalRotation += rotationSpeed;
 
-                    if (totalRotation >= Math.PI * 2) {
-                        return;
-                    }
-
-                    modelYPosition = lerp(modelYPosition, targetPosition, 0.031);
+                    modelYPosition = lerp(modelYPosition, targetPosition, 0.04);
                     model.position.y = modelYPosition;
+
+                    // if (totalRotation >= Math.PI * 2) {
+                    //     return;
+                    // }
                 }
-                console.log(model.position);
                 render();
             };
 

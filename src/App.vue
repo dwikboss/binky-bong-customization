@@ -2,17 +2,20 @@
 	<div id="view-container">
 		<img id="nwjns-logo" src="./assets/img/nwjns-logo.png">
 		<ModelView/>
+		<RewardDrawer/>
 	</div>
 </template>
   
 <script lang="ts">
 import { defineComponent } from 'vue';
 import ModelView from './components/ModelView.vue'
+import RewardDrawer from './components/RewardDrawer.vue'
 
 export default defineComponent({
     name: 'App',
 	components: {
-		ModelView: ModelView
+		ModelView: ModelView,
+		RewardDrawer: RewardDrawer
 	}
 })
 </script>
@@ -30,6 +33,9 @@ export default defineComponent({
 	}
 
 	#view-container {
+		position: relative;
+		height: 100%;
+		
 		#nwjns-logo {
 			width: 350px;
 			opacity: 0.25;
