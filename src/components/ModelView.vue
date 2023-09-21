@@ -57,24 +57,30 @@ export default defineComponent({
             });
 
             let totalRotation = 0;
-            let rotationSpeed = 0.22;
+            let rotationSpeed = 0.25;
             const targetRotationSpeed = 0.00;
 
             let modelYPosition = -1;
             const targetPosition = -0.4;
+
+            let modelXRotation = 2;
+            const targetXRotation = 0;
 
             const animateModel = () => {
                 requestAnimationFrame(animateModel);
                 
 
                 if (model) {
-                    rotationSpeed = lerp(rotationSpeed, targetRotationSpeed, 0.031);
+                    rotationSpeed = lerp(rotationSpeed, targetRotationSpeed, 0.036);
 
                     model.rotation.y += rotationSpeed;
                     totalRotation += rotationSpeed;
 
                     modelYPosition = lerp(modelYPosition, targetPosition, 0.04);
                     model.position.y = modelYPosition;
+
+                    modelXRotation = lerp(modelXRotation, targetXRotation, 0.04);
+                    model.rotation.x = modelXRotation;
 
                     // if (totalRotation >= Math.PI * 2) {
                     //     return;
