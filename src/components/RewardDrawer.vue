@@ -1,8 +1,8 @@
 <template>
     <div class="drawer-container">
-        <div class="drawer">
+        <div class="drawer" :class="{ open: editMode, closed: !editMode }">
             <div class="eye-toggle">
-                <div @click="switchEye" class="toggle-btn left" :class="{ 'toggle-btn': true, 'left': selectedEye === 1, 'right': selectedEye === 2 }"></div>
+                <div class="toggle-btn left"></div>
             </div>
         </div>
     </div>
@@ -10,40 +10,39 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useEditModeStore } from '../store/editMode';
 
 export default defineComponent({
 	name: 'HomeView',
-	data() {
-		return {
-            selectedEye: 1 as Number,
-		};
-	},
-	methods: {
-        switchEye() {
-            console.log(this.selectedEye);
-            if (this.selectedEye === 1) {
-                this.selectedEye = 2;
-            } else {
-                this.selectedEye = 1;
-            }
+    computed: {
+        editMode(): boolean { 
+            const editStore = useEditModeStore();
+            return editStore.isEditMode();
         }
-	},
+    },
 	components: {
     },
 });
 </script>
 
 <style lang="scss">
-.drawer-container { 
-    overflow: hidden;
+.drawer-container {
+    .drawer.closed {
+        transform: translateY(30vh);
+    }
+
+    .drawer.open {
+        transform: translateY(0vh);
+    }
 
     .drawer {
+        transition: all 250ms ease;
         display: flex;
         justify-content: center;
         position: absolute;
         background-color: #FFFFFF;
         z-index: 999;
-        height: 28vh;
+        height: 35vh;
         bottom: 0;
         border-top-left-radius: 20%;
         border-top-right-radius: 20%;

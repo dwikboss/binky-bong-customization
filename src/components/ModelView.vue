@@ -1,5 +1,6 @@
 <template>
-    <div id="canvas-wrapper" ref="container"></div>
+    <div id="canvas-wrapper" ref="container">
+    </div>
 </template>
 
 <script lang="ts">
@@ -17,9 +18,7 @@ export default defineComponent({
 	methods: {
         init () {
             const container = this.$refs.container as HTMLElement;
-
             const scene = new THREE.Scene();
-
             const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); 
             camera.position.z = 1;
 
@@ -32,10 +31,6 @@ export default defineComponent({
             
             const light = new THREE.AmbientLight(0xffffff, 2.25);
             scene.add(light);
-
-            // const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
-            // directionalLight.position.set(0, 1, 0);
-            // scene.add(directionalLight);
 
             const pointLight = new THREE.PointLight(0xffffff, 2.25);
             pointLight.position.set(1, 0, 0);
@@ -57,18 +52,17 @@ export default defineComponent({
             });
 
             let totalRotation = 0;
-            let rotationSpeed = 0.25;
+            let rotationSpeed = 0.72;
             const targetRotationSpeed = 0.00;
 
             let modelYPosition = -1;
             const targetPosition = -0.4;
 
-            let modelXRotation = 2;
+            let modelXRotation = 1.5;
             const targetXRotation = 0;
 
             const animateModel = () => {
                 requestAnimationFrame(animateModel);
-                
 
                 if (model) {
                     rotationSpeed = lerp(rotationSpeed, targetRotationSpeed, 0.036);
@@ -76,15 +70,11 @@ export default defineComponent({
                     model.rotation.y += rotationSpeed;
                     totalRotation += rotationSpeed;
 
-                    modelYPosition = lerp(modelYPosition, targetPosition, 0.04);
+                    modelYPosition = lerp(modelYPosition, targetPosition, 0.046);
                     model.position.y = modelYPosition;
 
-                    modelXRotation = lerp(modelXRotation, targetXRotation, 0.04);
+                    modelXRotation = lerp(modelXRotation, targetXRotation, 0.023);
                     model.rotation.x = modelXRotation;
-
-                    // if (totalRotation >= Math.PI * 2) {
-                    //     return;
-                    // }
                 }
                 render();
             };
@@ -96,7 +86,6 @@ export default defineComponent({
             animateModel();
 
             const controls = new OrbitControls(camera, renderer.domElement);
-            controls.addEventListener('change', render);
             controls.enablePan = true;
             controls.enableRotate = true;
             controls.enableDamping = true;

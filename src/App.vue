@@ -1,5 +1,6 @@
 <template>
 	<div id="view-container">
+		<div @click="toggleEditor" class="edit-btn"></div>
 		<img id="nwjns-logo" src="./assets/img/nwjns-logo.png">
 		<ModelView/>
 		<RewardDrawer/>
@@ -8,11 +9,18 @@
   
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useEditModeStore } from './store/editMode';
 import ModelView from './components/ModelView.vue'
 import RewardDrawer from './components/RewardDrawer.vue'
 
 export default defineComponent({
     name: 'App',
+	methods: {
+		toggleEditor() {
+			const editStore = useEditModeStore();
+			editStore.toggleMode();
+		}
+	},
 	components: {
 		ModelView: ModelView,
 		RewardDrawer: RewardDrawer
@@ -32,9 +40,21 @@ export default defineComponent({
 		height: 100vh;
 	}
 
+	.edit-btn {
+		position: fixed;
+		z-index: 999;
+		width: 50px;
+		height: 50px;
+		background-color: red;
+		border-radius: 50%;
+		right: 25px;
+		top: 25px;
+	}
+
 	#view-container {
 		position: relative;
 		height: 100%;
+		overflow: hidden;
 		
 		#nwjns-logo {
 			width: 350px;
@@ -45,5 +65,4 @@ export default defineComponent({
 			transform: translate(-50%, -50%);
 		}
 	}
-
 </style>
