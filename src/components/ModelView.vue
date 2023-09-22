@@ -1,69 +1,112 @@
 <template>
-    <div id="canvas-wrapper" ref="container">
+    <div>
+        <div id="canvas-wrapper" ref="container"></div>
     </div>
 </template>
-
+  
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, watchEffect, ref } from 'vue';
 import * as THREE from 'three';
+import { useEditModeStore } from '../store/editMode';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-let model: THREE.Object3D | null;
-const scene:THREE.Scene = new THREE.Scene();
-const camera:THREE.Camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); 
+let totalRotation = 0;
+let rotationSpeed = 0.72;
+let targetRotationSpeed = 0.00;
 
-let totalRotation:number = 0;
-let rotationSpeed:number = 0.72;
-const targetRotationSpeed:number = 0.00;
+let modelYPosition = -1;
+let targetPosition = -0.45;
 
-let modelYPosition:number = -1;
-const targetPosition:number = -0.4;
+let modelXRotation = 1.5;
+let targetXRotation = 0;
 
-let modelXRotation:number = 1.5;
-const targetXRotation:number = 0;
+let modelScale = 3;
+let targetScale = 3;
 
-const renderer = new THREE.WebGLRenderer( { alpha: true, antialias: true } );
+let yLerp = 0.037;
 
 export default defineComponent({
-	name: 'ModelView',
-    mounted() {
-        this.init();
-    },
-	methods: {
-        init () {
-            const container = this.$refs.container as HTMLElement;
-            camera.position.z = 1;
+    name: 'ModelView',
+    setup() {
+        const container = ref<HTMLElement | null>(null);
+        const editModeStore = useEditModeStore();
 
-            renderer.setClearColor( 0x000000, 0 );
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        let model: THREE.Object3D | null;
 
-            container.appendChild(renderer.domElement);
-            
-            const light = new THREE.AmbientLight(0xffffff, 2.25);
-            scene.add(light);
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 1;
 
-            const pointLight = new THREE.PointLight(0xffffff, 2.25);
-            pointLight.position.set(1, 0, 0);
-            camera.add(pointLight);
-            scene.add(camera);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setClearColor(0x000000, 0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
 
-            const dracoLoader = new DRACOLoader();
-            dracoLoader.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/');
+        const scene = new THREE.Scene();
 
-            const loader = new GLTFLoader();
-            loader.setDRACOLoader(dracoLoader)
+        const light = new THREE.AmbientLight(0xffffff, 2.25);
+        scene.add(light);
+
+        const pointLight = new THREE.PointLight(0xffffff, 2.25);
+        pointLight.position.set(1, 0, 0);
+        camera.add(pointLight);
+        scene.add(camera);
+
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/');
+
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+
+        watchEffect(() => {
+            const newState = editModeStore.isEditMode();
+            console.log('Edit mode changed to:', newState);
+
+            if (newState === true) {
+                console.log('true');
+                targetScale = 4.5;
+                targetPosition = -0.65;
+                yLerp = 0.11;
+            } else {
+                targetScale = 3;
+                targetPosition = -0.45;
+            }
+        });
+
+        onMounted(() => {
+            if (container.value) {
+                container.value.appendChild(renderer.domElement);
+            }
 
             loader.load('./src/assets/models/tokki_old.glb', (gltf) => {
                 model = gltf.scene;
-                model.position.set(0, -0.45, 0)
-                model.scale.set(3.1, 3.1, 3.1);
-
+                model.position.set(0, -0.45, 0);
+                model.scale.set(modelScale, modelScale, modelScale);
                 scene.add(model);
             });
+            
+            const animateModel = () => {
+                requestAnimationFrame(animateModel);
+                if (model) {
+                    rotationSpeed = lerp(rotationSpeed, targetRotationSpeed, 0.036);
+                    model.rotation.y += rotationSpeed;
+                    totalRotation += rotationSpeed;
 
-            this.animateModel();
+                    modelYPosition = lerp(modelYPosition, targetPosition, yLerp);
+                    model.position.y = modelYPosition;
+
+                    modelXRotation = lerp(modelXRotation, targetXRotation, 0.02);
+                    model.rotation.x = modelXRotation;
+
+                    modelScale = lerp(modelScale, targetScale, 0.12);
+                    model.scale.set(modelScale, modelScale, modelScale);
+
+                    console.log(modelScale);
+                }
+                renderer.render(scene, camera);
+            };
+
+            animateModel();
 
             const controls = new OrbitControls(camera, renderer.domElement);
             controls.enablePan = true;
@@ -71,43 +114,47 @@ export default defineComponent({
             controls.enableDamping = true;
             controls.enableZoom = false;
             controls.update();
-        },
+        });
 
-        animateModel() {
-            requestAnimationFrame(this.animateModel);
+        // let currentScale = initialModelScale;
+        // let currentYPos = initialModelY;
 
-            if (model) {
-                rotationSpeed = this.lerp(rotationSpeed, targetRotationSpeed, 0.036);
+        // const moveModel = () => {
+        //     requestAnimationFrame(moveModel);
+        //     // console.log(this.model.scal);
+        //     let targetScale:number = 5;
+        //     // let targetPosition:number = -5;
+            
+        //     if (model) {
+        //         currentScale = lerp(currentScale, targetScale, 0.1);
+        //         model.scale.set(currentScale, currentScale, currentScale);
 
-                model.rotation.y += rotationSpeed;
-                totalRotation += rotationSpeed;
+        //         // currentYPos = lerp(currentYPos, targetPosition, 0.05);
+        //         // model.position.y = currentYPos;
+        //         model.position.y = 2;
+        //         console.log(model.position.y);
+        //     }
+        // };
 
-                modelYPosition = this.lerp(modelYPosition, targetPosition, 0.046);
-                model.position.y = modelYPosition;
-
-                modelXRotation = this.lerp(modelXRotation, targetXRotation, 0.023);
-                model.rotation.x = modelXRotation;
-            }
-            this.render();
-        },
-
-        lerp(a: any, b: any, t: any) {
+        const lerp = (a: number, b: number, t: number) => {
             return a + (b - a) * t;
-        },
+        };
 
-        render() {
-            renderer.render( scene, camera );
-        }
-	}
+        return {
+            container,
+            // moveModel,
+            lerp
+        };
+    },
 });
 </script>
-
-<style lang="scss">
+  
+<style>
 #canvas-wrapper {
     position: relative;
 }
 
 canvas {
     height: 100% !important;
-}
+}   
 </style>

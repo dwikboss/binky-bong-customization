@@ -1,7 +1,7 @@
 <template>
 	<div id="view-container">
 		<div @click="toggleEditor" class="edit-btn"></div>
-		<img id="nwjns-logo" src="./assets/img/nwjns-logo.png">
+		<img id="nwjns-logo" src="@/assets/img/nwjns-logo.png">
 		<ModelView/>
 		<RewardDrawer/>
 	</div>
