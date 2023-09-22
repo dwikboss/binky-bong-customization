@@ -55,6 +55,7 @@ export default defineComponent({
 		position: relative;
 		height: 100%;
 		overflow: hidden;
+		width: 100vw;
 		
 		#nwjns-logo {
 			width: 350px;
