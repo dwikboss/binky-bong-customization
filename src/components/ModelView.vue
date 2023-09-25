@@ -75,7 +75,7 @@ export default defineComponent({
             // console.log(model ? model.rotation : '');
         });
 
-        function loadEye(model: THREE.Object3D, eyePath: string, position: {x: number, y: number, z: number}, scale: {x: number, y: number, z: number}) {
+        const loadEye = (model: THREE.Object3D, eyePath: string, position: {x: number, y: number, z: number}, scale: {x: number, y: number, z: number}) => {
             loader.load(eyePath, (eyeGltf) => {
                 const eye = eyeGltf.scene;
                 eye.position.set(position.x, position.y, position.z);
