@@ -2,7 +2,13 @@
     <div class="drawer-container">
         <div class="drawer" :class="{ open: editMode, closed: !editMode }">
             <div class="eye-toggle">
-                <div class="toggle-btn left"></div>
+                <div class="toggle-btn left" @click="moveLeftEye">LEFT</div>
+                <div class="toggle-btn right">RIGHT</div>
+            </div>
+            <div class="badge-container">
+                <div class="default-holder badge">DEF</div>
+                <div class="min-holder badge">MIN</div>
+                <div class="star-holder badge">STR</div>
             </div>
         </div>
     </div>
@@ -14,6 +20,11 @@ import { useEditModeStore } from '../store/editMode';
 
 export default defineComponent({
 	name: 'HomeView',
+    methods: {
+        moveLeftEye() {
+
+        },
+    },
     computed: {
         editMode(): boolean { 
             const editStore = useEditModeStore();
@@ -39,7 +50,8 @@ export default defineComponent({
         transition: all 250ms ease;
         display: flex;
         justify-content: center;
-        position: absolute;
+        align-items: center;
+        position: fixed;
         background-color: #FFFFFF;
         z-index: 999;
         height: 35vh;
@@ -50,30 +62,38 @@ export default defineComponent({
         -webkit-box-shadow: 0px -2px 10px -3px rgba(38,64,136,0.4);
         -moz-box-shadow: 0px -2px 10px -3px rgba(38,64,136,0.4);
         box-shadow: 0px -2px 10px -3px rgba(38,64,136,0.4);
+        flex-direction: column;
         padding-top: 25px;
 
+        .badge-container {
+            height: 100%;
+            width: 75%;
+            padding: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+
+            .badge {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background-color: #7E93BA;
+                color: white;
+            }
+        }
+
         .eye-toggle {
-            border: 1px solid #7E93BA;
-            border-radius: 999px;
-            width: 125px;
-            height: 20px;
-            padding: 5px;
+            display: flex;
+            gap: 10px;
 
             .toggle-btn {
-                background-color: #7E93BA;
-                width: 48%;
+                width: 75px;
+                background-color: #ffffff;
+                border: 1px solid #7E93BA;
                 height: 100%;
                 border-radius: 999px;
-                transition: all 0.3s ease;
-                display: flex;
-            }
-
-            .toggle-btn.left {
-                float: left;
-            }
-
-            .toggle-btn.right {
-                float: right;
+                color: #7E93BA;
+                font-weight: 700;
             }
         }
     }
