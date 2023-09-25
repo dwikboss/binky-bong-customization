@@ -42,13 +42,18 @@ export default defineComponent({
 
 	.edit-btn {
 		position: fixed;
-		z-index: 999;
 		width: 50px;
 		height: 50px;
-		background-color: red;
+		z-index: 999;
 		border-radius: 50%;
 		right: 25px;
 		top: 25px;
+		border: 1px solid #7e93ba;
+		background-color: #dce7fc;
+		background-image: url("@/assets/img/pencil.png");
+		background-size: 50%;
+		background-repeat: no-repeat;
+		background-position: center center;
 	}
 
 	#view-container {
