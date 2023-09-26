@@ -12,10 +12,6 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
-// let totalRotation = 0;
-// let rotationSpeed = 0.72;
-// let targetRotationSpeed = 0.00;
-
 let modelYPosition = -1;
 let targetPosition = -0.45;
 
@@ -28,6 +24,14 @@ let targetYRotation = 0;
 let modelScale = 3;
 let targetScale = 3;
 
+let eyeZL = 0.02;
+let eyeZR = 0.02;
+let targetZL = 0.02;
+let targetZR = 0.02;
+
+let currentLeftEye: THREE.Object3D | null;
+let currentRightEye: THREE.Object3D | null;
+
 let yLerp = 0.037;
 
 export default defineComponent({
@@ -37,7 +41,8 @@ export default defineComponent({
         const editModeStore = useEditModeStore();
 
         let bunny: THREE.Object3D | null;
-        // let leftEye: THREE.Object3D | null;
+        let leftEye: THREE.Object3D | null;
+        let rightEye: THREE.Object3D | null;
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 1;
@@ -64,25 +69,66 @@ export default defineComponent({
 
         watchEffect(() => {
             const newState = editModeStore.editMode;
+            const leftEyeState = editModeStore.isLeftEye;
+            const rightEyeState = editModeStore.isRightEye;
+
             if (newState === true) {
                 targetScale = 4.5;
                 targetPosition = -0.65;
                 yLerp = 0.11;
+
+                if (leftEyeState === true) {
+                    targetZL = 0.03;
+                } else {
+                    targetZL = 0.02;
+                }
+
+                if (rightEyeState === true) {
+                    targetZR = 0.03;
+                } else {
+                    targetZR = 0.02;
+                }
+
+                if (bunny) {
+                    if (currentLeftEye) {
+                        bunny.remove(currentLeftEye);
+                    }
+
+                    if (currentRightEye) {
+                        bunny.remove(currentRightEye);
+                    }
+
+                    loadLeftEye(bunny, editModeStore.selectedEyeModelL, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                    loadRightEye(bunny, editModeStore.selectedEyeModelR, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                }
+
+                console.log(bunny);
             } else {
                 targetScale = 3;
                 targetPosition = -0.45;
                 targetYRotation = 0;
+                targetZL = 0.02;
+                targetZR = 0.02;
             }
-            // console.log(model ? model.rotation : '');
         });
 
-        const loadEye = (model: THREE.Object3D, eyePath: string, position: {x: number, y: number, z: number}, scale: {x: number, y: number, z: number}) => {
+        const loadLeftEye = (model: THREE.Object3D, eyePath: string, position: {x: number, y: number, z: number}, scale: {x: number, y: number, z: number}) => {
             loader.load(eyePath, (eyeGltf) => {
-                const eye = eyeGltf.scene;
-                eye.position.set(position.x, position.y, position.z);
-                eye.scale.set(scale.x, scale.y, scale.z);
+                leftEye = eyeGltf.scene;
+                leftEye.position.set(position.x, position.y, position.z);
+                leftEye.scale.set(scale.x, scale.y, scale.z);
+                currentLeftEye = leftEye;
+                model.add(leftEye);
+            });
+        }
 
-                model.add(eye);
+        const loadRightEye = (model: THREE.Object3D, eyePath: string, position: {x: number, y: number, z: number}, scale: {x: number, y: number, z: number}) => {
+            loader.load(eyePath, (eyeGltf) => {
+                rightEye = eyeGltf.scene;
+                rightEye.position.set(position.x, position.y, position.z);
+                rightEye.scale.set(scale.x, scale.y, scale.z);
+                currentRightEye = rightEye;
+                model.add(rightEye);
             });
         }
 
@@ -96,8 +142,9 @@ export default defineComponent({
                 bunny.position.set(0, -0.45, 0);
                 scene.add(bunny);
 
-                loadEye(bunny, './src/assets/models/eyes/star-eye.glb', { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
-                loadEye(bunny, './src/assets/models/eyes/min-eye.glb', { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                loadLeftEye(bunny, editModeStore.selectedEyeModelL, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                loadRightEye(bunny, editModeStore.selectedEyeModelL, { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                // loadRightEye(bunny, './src/assets/models/eyes/default-eye.glb', { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
             });
             
             const animateModel = () => {
@@ -115,7 +162,17 @@ export default defineComponent({
                     modelScale = lerp(modelScale, targetScale, 0.12);
                     bunny.scale.set(modelScale, modelScale, modelScale);
 
-                    // console.log(bunny.rotation.y);
+                    // eye pop out
+
+                    if (leftEye) {
+                        eyeZL = lerp(eyeZL, targetZL, 0.12);
+                        leftEye.position.z = eyeZL;
+                    }
+
+                    if (rightEye) {
+                        eyeZR = lerp(eyeZR, targetZR, 0.12);
+                        rightEye.position.z = eyeZR;
+                    }
                 }
                 renderer.render(scene, camera);
             };

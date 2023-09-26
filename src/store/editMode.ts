@@ -5,6 +5,8 @@ export const useEditModeStore = defineStore('editMode', {
         editMode: false as boolean,
         leftEyeEdit: false as boolean,
         rightEyeEdit: false as boolean,
+        eyeModelL: './src/assets/models/eyes/default-eye.glb' as string,
+        eyeModelR: './src/assets/models/eyes/default-eye.glb' as string,
     }),
     getters: {
         isEditMode(): boolean {
@@ -16,8 +18,20 @@ export const useEditModeStore = defineStore('editMode', {
         isRightEye(): boolean {
             return this.rightEyeEdit;
         },
+        selectedEyeModelL(): string {
+            return this.eyeModelL;
+        },
+        selectedEyeModelR(): string {
+            return this.eyeModelL;
+        },
     },
     actions: {
+        changeLeftEye(model: string) {
+            this.eyeModelL = model;
+        },
+        changeRightEye(model: string) {
+            this.eyeModelR = model;
+        },
         toggleMode() {
             this.editMode = !this.editMode;
         },

@@ -6,9 +6,9 @@
                 <div class="toggle-btn right" @click="toggleEye(false)">RIGHT</div>
             </div>
             <div class="badge-container">
-                <div class="default-holder badge">DEF</div>
-                <div class="min-holder badge">MIN</div>
-                <div class="star-holder badge">STR</div>
+                <div class="default-holder badge" @click="selectEyeModel('./src/assets/models/eyes/default-eye.glb')">DEF</div>
+                <div class="min-holder badge" @click="selectEyeModel('./src/assets/models/eyes/min-eye.glb')">MIN</div>
+                <div class="star-holder badge" @click="selectEyeModel('./src/assets/models/eyes/star-eye.glb')">STR</div>
             </div>
         </div>
     </div>
@@ -29,16 +29,26 @@ export default defineComponent({
         const editModeStore = useEditModeStore();
 
         const toggleEye = (isLeftEye: boolean) => {
-            if (isLeftEye) {
-                editModeStore.toggleLeftEye();
-            } else {
-                editModeStore.toggleRightEye();
+            if (editModeStore.isEditMode) {
+                if (isLeftEye) {
+                    editModeStore.toggleLeftEye();
+                } else {
+                    editModeStore.toggleRightEye();
+                }
             }
+        };
+
+        const selectEyeModel = (model: string) => {
+            if (editModeStore.isEditMode) {
+                editModeStore.changeLeftEye(model);
+            }
+            console.log(editModeStore.selectedEyeModelL);
         };
 
         return {
             editModeStore,
             toggleEye,
+            selectEyeModel,
         };
     },
     computed: {
