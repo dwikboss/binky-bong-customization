@@ -22,7 +22,7 @@ export const useEditModeStore = defineStore('editMode', {
             return this.eyeModelL;
         },
         selectedEyeModelR(): string {
-            return this.eyeModelL;
+            return this.eyeModelR;
         },
     },
     actions: {
@@ -35,11 +35,15 @@ export const useEditModeStore = defineStore('editMode', {
         toggleMode() {
             this.editMode = !this.editMode;
         },
-        toggleLeftEye() {
-            this.leftEyeEdit = !this.leftEyeEdit;
-        },
-        toggleRightEye() {
-            this.rightEyeEdit = !this.rightEyeEdit;
-        },
+        toggleEye(eye: string) {
+            if (eye === "left") {
+                this.leftEyeEdit = !this.leftEyeEdit;  
+            } else if (eye === "right") {
+                this.rightEyeEdit = !this.rightEyeEdit;
+            } else {
+                this.leftEyeEdit = false;
+                this.rightEyeEdit = false;
+            }
+        }
     }
 });

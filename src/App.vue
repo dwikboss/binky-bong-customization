@@ -30,8 +30,8 @@ export default defineComponent({
 
 <style lang="scss">
 	html, body {
-		background: rgb(253, 253, 253);
-		background: linear-gradient(0deg, rgba(85, 129, 232, 0.774) 0%, rgba(207,219,248,1) 64%, rgba(255,255,255,1) 100%);
+		background-color: rgb(253, 253, 253);
+		background-image: linear-gradient(0deg, rgba(85, 129, 232, 0.774) 0%, rgba(207,219,248,1) 64%, rgba(255,255,255,1) 100%);
 		height: 100%;
 	}
 

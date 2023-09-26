@@ -2,8 +2,8 @@
     <div class="drawer-container">
         <div class="drawer" :class="{ open: editMode, closed: !editMode }">
             <div class="eye-toggle">
-                <div class="toggle-btn left" @click="toggleEye(true)">LEFT</div>
-                <div class="toggle-btn right" @click="toggleEye(false)">RIGHT</div>
+                <EyeControl eye="left"/>
+                <EyeControl eye="right"/>
             </div>
             <div class="badge-container">
                 <div class="default-holder badge" @click="selectEyeModel('./src/assets/models/eyes/default-eye.glb')">DEF</div>
@@ -17,37 +17,25 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useEditModeStore } from '../store/editMode';
+import EyeControl from './EyeControl.vue'
 
 export default defineComponent({
     name: 'HomeView',
-    data() {
-        return {
-            leftEyeEdit: false,
-        };
-    },
-    setup() {
+    setup () {
         const editModeStore = useEditModeStore();
 
-        const toggleEye = (isLeftEye: boolean) => {
+        const selectEyeModel = (model: string) => {
             if (editModeStore.isEditMode) {
-                if (isLeftEye) {
-                    editModeStore.toggleLeftEye();
-                } else {
-                    editModeStore.toggleRightEye();
+                if (editModeStore.isLeftEye) {
+                    editModeStore.changeLeftEye(model);
+                } else if (editModeStore.isRightEye) {
+                    editModeStore.changeRightEye(model);
                 }
             }
         };
 
-        const selectEyeModel = (model: string) => {
-            if (editModeStore.isEditMode) {
-                editModeStore.changeLeftEye(model);
-            }
-            console.log(editModeStore.selectedEyeModelL);
-        };
-
         return {
             editModeStore,
-            toggleEye,
             selectEyeModel,
         };
     },
@@ -56,6 +44,9 @@ export default defineComponent({
             return this.editModeStore.editMode;
         },
     },
+    components: {
+        EyeControl: EyeControl
+    }
 });
 </script>
 
@@ -102,21 +93,6 @@ export default defineComponent({
                 border-radius: 50%;
                 background-color: #7E93BA;
                 color: white;
-            }
-        }
-
-        .eye-toggle {
-            display: flex;
-            gap: 10px;
-
-            .toggle-btn {
-                width: 75px;
-                background-color: #ffffff;
-                border: 1px solid #7E93BA;
-                height: 100%;
-                border-radius: 999px;
-                color: #7E93BA;
-                font-weight: 700;
             }
         }
     }

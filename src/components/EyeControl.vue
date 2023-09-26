@@ -1,47 +1,57 @@
 <template>
     <div class="eye-toggle">
-      <div class="toggle-btn left" @click="toggleEye('left')" :class="{ active: eyeState === 'left' }">LEFT</div>
-      <div class="toggle-btn right" @click="toggleEye('right')" :class="{ active: eyeState === 'right' }">RIGHT</div>
-    </div>
-    <div class="badge-container">
-        <div class="default-holder badge" @click="selectEyeModel('./src/assets/models/eyes/default-eye.glb')">DEF</div>
-        <div class="min-holder badge" @click="selectEyeModel('./src/assets/models/eyes/min-eye.glb')">MIN</div>
-        <div class="star-holder badge" @click="selectEyeModel('./src/assets/models/eyes/star-eye.glb')">STR</div>
+        <div class="toggle-btn left" @click="toggleEye" :class="{ active: eyeActive }">{{ eye.eye }}</div>
     </div>
 </template>
   
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { useEditModeStore } from '../store/editMode';
   
 export default defineComponent({
     name: 'EyeControl',
-    setup() {
-        const editModeStore = useEditModeStore();
-  
-        const toggleEye = (eye: 'left' | 'right') => {
+    setup (eye) {
+        const eyeActive = ref(false);
+
+        const toggleEye = () => {
+            const editModeStore = useEditModeStore();
             if (editModeStore.isEditMode) {
-                editModeStore.toggleEye(eye);
+                editModeStore.toggleEye(eye.eye!);
             }
-        };
-  
-        const selectEyeModel = (model: string) => {
-            if (editModeStore.isEditMode) {
-                const activeEye = editModeStore.activeEye;
-                if (activeEye === 'left' || activeEye === 'right') {
-                    editModeStore.changeEyeModel(activeEye, model);
-                }
-            }
-        };
-  
+            eyeActive.value = !eyeActive.value;
+        }
+
         return {
             toggleEye,
-            selectEyeModel,
-        };
+            eye,
+            eyeActive
+        }
+    },
+    props: {
+        eye: String
     },
 });
 </script>
   
-  <style lang="scss">
-  /* Add your styling here */
-  </style>
+<style lang="scss">
+.eye-toggle {
+    display: flex;
+    gap: 10px;
+
+    .toggle-btn {
+        text-transform: uppercase;
+        width: 75px;
+        background-color: #ffffff;
+        border: 1px solid #7E93BA;
+        height: 100%;
+        border-radius: 999px;
+        color: #7E93BA;
+        font-weight: 700;
+    }
+
+    .toggle-btn.active {
+        background-color: #7E93BA;
+        color: white;
+    }
+}
+</style>

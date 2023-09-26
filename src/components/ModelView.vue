@@ -36,7 +36,7 @@ let yLerp = 0.037;
 
 export default defineComponent({
     name: 'ModelView',
-    setup() {
+    setup () {
         const container = ref<HTMLElement | null>(null);
         const editModeStore = useEditModeStore();
 
@@ -99,7 +99,7 @@ export default defineComponent({
                     }
 
                     loadLeftEye(bunny, editModeStore.selectedEyeModelL, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
-                    loadRightEye(bunny, editModeStore.selectedEyeModelR, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                    loadRightEye(bunny, editModeStore.selectedEyeModelR, { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
                 }
 
                 console.log(bunny);
@@ -138,12 +138,13 @@ export default defineComponent({
             }
 
             loader.load('./src/assets/models/tokki_old.glb', (gltf) => {
+                console.log(gltf.scene)
                 bunny = gltf.scene;
                 bunny.position.set(0, -0.45, 0);
                 scene.add(bunny);
 
                 loadLeftEye(bunny, editModeStore.selectedEyeModelL, { x: -0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
-                loadRightEye(bunny, editModeStore.selectedEyeModelL, { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
+                loadRightEye(bunny, editModeStore.selectedEyeModelR, { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
                 // loadRightEye(bunny, './src/assets/models/eyes/default-eye.glb', { x: 0.02, y: 0.168, z: 0.02 }, { x: 1.1, y: 1.1, z: 1.1 });
             });
             
