@@ -2,8 +2,8 @@
     <div class="drawer-container">
         <div class="drawer" :class="{ open: editMode, closed: !editMode }">
             <div class="eye-toggle">
-                <div class="toggle-btn left" @click="moveLeftEye">LEFT</div>
-                <div class="toggle-btn right">RIGHT</div>
+                <div class="toggle-btn left" @click="toggleEye(true)">LEFT</div>
+                <div class="toggle-btn right" @click="toggleEye(false)">RIGHT</div>
             </div>
             <div class="badge-container">
                 <div class="default-holder badge">DEF</div>
@@ -19,19 +19,32 @@ import { defineComponent } from 'vue';
 import { useEditModeStore } from '../store/editMode';
 
 export default defineComponent({
-	name: 'HomeView',
-    methods: {
-        moveLeftEye() {
+    name: 'HomeView',
+    data() {
+        return {
+            leftEyeEdit: false,
+        };
+    },
+    setup() {
+        const editModeStore = useEditModeStore();
 
-        },
+        const toggleEye = (isLeftEye: boolean) => {
+            if (isLeftEye) {
+                editModeStore.toggleLeftEye();
+            } else {
+                editModeStore.toggleRightEye();
+            }
+        };
+
+        return {
+            editModeStore,
+            toggleEye,
+        };
     },
     computed: {
-        editMode(): boolean { 
-            const editStore = useEditModeStore();
-            return editStore.isEditMode();
-        }
-    },
-	components: {
+        editMode(): boolean {
+            return this.editModeStore.editMode;
+        },
     },
 });
 </script>

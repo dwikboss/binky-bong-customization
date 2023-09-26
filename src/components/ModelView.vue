@@ -37,6 +37,7 @@ export default defineComponent({
         const editModeStore = useEditModeStore();
 
         let bunny: THREE.Object3D | null;
+        // let leftEye: THREE.Object3D | null;
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 1;
@@ -62,7 +63,7 @@ export default defineComponent({
         loader.setDRACOLoader(dracoLoader);
 
         watchEffect(() => {
-            const newState = editModeStore.isEditMode();
+            const newState = editModeStore.editMode;
             if (newState === true) {
                 targetScale = 4.5;
                 targetPosition = -0.65;
@@ -114,7 +115,7 @@ export default defineComponent({
                     modelScale = lerp(modelScale, targetScale, 0.12);
                     bunny.scale.set(modelScale, modelScale, modelScale);
 
-                    console.log(bunny.rotation.y);
+                    // console.log(bunny.rotation.y);
                 }
                 renderer.render(scene, camera);
             };
