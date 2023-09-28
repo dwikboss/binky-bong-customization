@@ -149,7 +149,6 @@ export default defineComponent({
             });
             
             const animateModel = () => {
-                requestAnimationFrame(animateModel);
                 if (bunny) {
                     modelYRotation = lerp(modelYRotation, targetYRotation, 0.05);
                     bunny.rotation.y = modelYRotation;
@@ -176,6 +175,7 @@ export default defineComponent({
                     }
                 }
                 renderer.render(scene, camera);
+                requestAnimationFrame(animateModel);
             };
 
             animateModel();
