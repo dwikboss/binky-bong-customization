@@ -62,7 +62,7 @@ export default defineComponent({
         scene.add(camera);
 
         const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/');
+        dracoLoader.setDecoderPath('./src/assets/models/draco/');
 
         const loader = new GLTFLoader();
         loader.setDRACOLoader(dracoLoader);
